@@ -1,0 +1,61 @@
+name: Reusable - Gitleaks
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+        description: "Service Name"
+        required: true
+        type: string
+
+      runner:
+        description: "Runner label"
+        required: false
+        type: string
+        default: ubuntu-latest
+
+jobs:
+  gitleaks:
+    name: Gitleaks
+    runs-on: ${{ inputs.runner }}
+
+    permissions:
+      contents: read
+      # pull-requests: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks (Official Image)
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/repo" \
+            ghcr.io/gitleaks/gitleaks:latest \
+            git /repo \
+            --report-format sarif \
+            --report-path /repo/gitleaks-report.sarif \
+            --redact \
+            --exit-code 0
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: gitleaks-report.sarif
+          category: gitleaks-${{ inputs.service-name }}
+
+      # - name: Gitleaks
+      #   uses: gitleaks/gitleaks-action@v3
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Upload SARIF
+      #   if: always()
+      #   uses: github/codeql-action/upload-sarif@v4
+      #   with:
+      #     sarif_file: results.sarif
+      #     category: gitleaks-${{ inputs.service-name }}
