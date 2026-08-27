@@ -28,6 +28,7 @@ jobs:
       # ============================================================
       # Checkout
       # ============================================================
+      
       - name: Checkout Code
         uses: actions/checkout@v6
         with:
@@ -36,37 +37,28 @@ jobs:
       # ============================================================
       # Setup NodeJS: 18
       # ============================================================
+      
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-
-      - name: Run frontend lint
-        # working-directory: ./frontend
-        run: npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --config .eslintrc.cjs
-
-      # - name: Create CodeQL configuration
-      #   run: |
-      #     cat > codeql-config.yml <<EOF
-      #     name: Go CodeQL
-      #     paths:
-      #       - ${{ inputs.service-name }}
-      #     EOF
+          cache: npm
 
       # ============================================================
       # Initialize CodeQL
       # ============================================================
+      
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
           queries: security-extended
           build-mode: manual
-          # config-file: codeql-config.yml
-
+          
       # ============================================================
       # Autobuild Application
       # ============================================================
+      
       # Build NodeJS Application automatically
       # - name: Autobuild 
       #   uses: github/codeql-action/autobuild@v4
@@ -74,13 +66,15 @@ jobs:
       # ============================================================
       # Install Dependencies
       # ============================================================
+      
       - name: Install frontend dependencies
         # working-directory: ./frontend
-        run: npm install
+        run: npm install    # npm ci
 
       # ============================================================
       # Build Application
       # ============================================================
+      
       - name: Build frontend
         # working-directory: frontend
         run: npm run build
@@ -88,6 +82,7 @@ jobs:
       # ============================================================
       # Analyze (Uploads sarif report to Github Security Tab)
       # ============================================================
+      
       - name: CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
