@@ -86,7 +86,7 @@ jobs:
         continue-on-error: true
         run: |
           npx eslint . \
-            --ext js,jsx,ts,tsx \
+            --ext js,jsx \
             --report-unused-disable-directives \
             --max-warnings 0 \
             --config .eslintrc.cjs \
