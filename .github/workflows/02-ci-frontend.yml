@@ -1,0 +1,190 @@
+# =======================================================================================
+# CI/CD — Backend
+#
+# Flow:
+#
+# Push to develop/release
+#        │
+#        ▼
+#   _go-build.yml
+#        │
+#        ├── Gitleaks
+#        ├── Trivy FS
+#        ├── Dockerfile scans
+#        ├── Build image
+#        ├── Trivy image scan
+#        ├── Push image → ECR
+#        ├── Cosign signing
+#        ├── SBOM generation + attestation
+#        └── Update GitOps Helm values + create PR
+#
+# GitOps PR:
+#        │
+#        ▼
+#   GitOps repository
+#        │
+#        ├── Helm lint
+#        ├── Helm template
+#        ├── Kubeconform
+#        └── Trivy config scan
+#        │
+#        ▼
+#      Merge
+#        │
+#        ▼
+#      Argo CD
+#
+# =======================================================================================
+
+name: CI/CD — Backend
+
+on:
+  workflow_dispatch: 
+  push:
+    branches:
+      - develop
+      - 'release/**'
+
+    paths:
+      - 'backend/**'
+      - '.github/workflows/02-ci-frontend.yml'
+      - '.github/workflows/_node-build.yml'
+      - '.github/workflows/_node-pr-check.yml'
+      - '.github/workflows/_reusable-*.yml'
+
+# =======================================================================================
+# Permissions
+# =======================================================================================
+
+permissions:
+  contents: read
+  id-token: write
+  security-events: write
+  actions: read
+
+# =======================================================================================
+# Environment
+# =======================================================================================
+
+env:
+
+  AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+  AWS_REGION: us-east-1
+  AWS_ECR_ROLE_ARN: ${{ vars.AWS_ECR_ROLE_ARN }}
+  ECR_REPOSITORY: backend
+  # GITOPS_REPO: ${{ vars.GITOPS_REPO }}
+
+# =======================================================================================
+# Jobs
+# =======================================================================================
+
+jobs:
+
+  # =============================================================================
+  # 1. Prepare AWS / Application Parameters
+  # =============================================================================
+
+  Aws-Params-Job:
+    name: AWS Parameters
+    runs-on: ubuntu-latest
+
+    outputs:
+      ecr-registry: ${{ steps.aws-params.outputs.ecr-registry }}
+      ecr-repository: ${{ steps.aws-params.outputs.ecr-repository }}
+      aws-region: ${{ steps.aws-params.outputs.aws-region }}
+      aws-ecr-role-arn: ${{ steps.aws-params.outputs.aws-ecr-role-arn }}
+
+    steps:
+      - name: Construct AWS Parameters
+        id: aws-params
+        run: |
+          ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          
+          echo "ecr-registry=$ECR_REGISTRY" >> "$GITHUB_OUTPUT"
+          echo "ecr-repository=$ECR_REPOSITORY" >> "$GITHUB_OUTPUT"
+          echo "aws-region=$AWS_REGION" >> "$GITHUB_OUTPUT"
+          echo "aws-ecr-role-arn=$AWS_ECR_ROLE_ARN" >> "$GITHUB_OUTPUT"
+          echo "ECR Registry : $ECR_REGISTRY"
+          echo "ECR Repository : $ECR_REPOSITORY"
+          echo "AWS Region : $AWS_REGION"
+
+# =======================================================================================
+# 2. Main CI/CD Pipeline
+# =======================================================================================
+
+  CI-Job:
+    name: Backend CI/CD
+
+    needs:
+      - Aws-Params-Job
+
+    uses: ./.github/workflows/_go-build.yml
+
+    with:
+
+      # =========================================================================
+      # General
+      # =========================================================================
+
+      service-name: backend
+      runner: ubuntu-latest
+
+      # =========================================================================
+      # Application Security Scans
+      # =========================================================================
+
+      gitleaks-scan: false
+      trivy-fs-scan: false
+      codeql-scan: false
+      sonarqube-scan: false
+      sonar-host-url: ""
+
+      # =========================================================================
+      # Dockerfile Security Scan
+      # =========================================================================
+
+      dockerfile-scan: false
+      dockerfile: Dockerfile
+            
+      hadolint-dockerfile-scan: false
+      trivy-dockerfile-scan: false
+      opa-conftest-dockerfile-scan: false
+
+      # =========================================================================
+      # Image Build
+      # =========================================================================
+
+      image-build: false
+      build-context: "."
+
+      image-scan: false
+      image-push-ecr: false
+      
+      ecr-registry: ${{ needs.Aws-Params-Job.outputs.ecr-registry }}
+      ecr-repository: ${{ needs.Aws-Params-Job.outputs.ecr-repository }}
+      aws-region: ${{ needs.Aws-Params-Job.outputs.aws-region }}
+      aws-ecr-role-arn: ${{ needs.Aws-Params-Job.outputs.aws-ecr-role-arn }}
+
+      # =========================================================================
+      # Image Signing
+      # =========================================================================
+      
+      image-sign: false
+      
+      # =========================================================================
+      # SBOM
+      # =========================================================================
+
+      image-sbom: false
+
+      # =========================================================================
+      # GitOps
+      # =========================================================================
+
+      gitops-repo: ${{ vars.GITOPS_REPO }}
+      helm-values-file: envs/dev/values-backend.yaml
+
+    secrets:
+
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
