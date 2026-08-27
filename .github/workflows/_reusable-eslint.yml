@@ -96,17 +96,36 @@ jobs:
             
 
       # ============================================================
+      # Check SARIF report exists and is not empty
+      # ============================================================
+      
+      - name: Check ESLint SARIF file
+        id: check-sarif
+        if: always()
+        run: |
+          SARIF_FILE="eslint-${{ inputs.service-name }}.sarif"
+
+          if [ -s "$SARIF_FILE" ]; then
+            echo "sarif_exists=true" >> "$GITHUB_OUTPUT"
+            echo "✅ SARIF file exists and is not empty."
+          else
+            echo "sarif_exists=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️ SARIF file does not exist or is empty."
+          fi
+
+
+      # ============================================================
       # Upload ESLint Scan SARIF report to Github
       # ============================================================
-
+      
       - name: Upload ESLint SARIF
-        if: always()
+        if: always() && steps.check-sarif.outputs.sarif_exists == 'true'
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: eslint-${{ inputs.service-name }}.sarif
-          category: eslint--${{ inputs.service-name }}
+          category: eslint-${{ inputs.service-name }}
           wait-for-processing: true
-
+      
 
       # ============================================================
       # Fail pipeline if ESLint failed
