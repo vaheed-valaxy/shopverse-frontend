@@ -90,8 +90,7 @@ jobs:
             --report-unused-disable-directives \
             --max-warnings 0 \
             --config .eslintrc.cjs \
-            --format sarif \
-             --format json > eslint-${{ inputs.service-name }}.sarif      # .json
+            --format json > eslint-${{ inputs.service-name }}.sarif      # .json
             
 
       # ============================================================
