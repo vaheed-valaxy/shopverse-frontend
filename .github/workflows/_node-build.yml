@@ -34,6 +34,12 @@ on:
         type: boolean
         default: false
 
+      eslint-scan:
+        description: "Enable ESlint Scan"
+        required: false
+        type: boolean
+        default: false
+
       trivy-fs-scan:
         description: "Enable Trivy FS Scan"
         required: false
@@ -203,6 +209,7 @@ jobs:
       runner: ${{ inputs.runner }}
 
       gitleaks-scan: ${{ inputs.gitleaks-scan }}
+      eslint-scan: ${{ inputs.eslint-scan }}
       trivy-fs-scan: ${{ inputs.trivy-fs-scan }}
       codeql-scan: ${{ inputs.codeql-scan }}
 
