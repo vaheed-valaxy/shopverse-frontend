@@ -1,0 +1,38 @@
+name: PR Check — backend
+# Runs on feature/fix/chore branches.
+# Lint + test + SAST only. No Docker, no ECR, no deploy.
+on:
+  workflow_dispatch: 
+  
+  push:
+    branches: ['feat-*', 'fix-*', 'chore-*']
+    paths:
+      - 'backend/**'
+      - '.github/workflows/_01-ci-pr-backend.yml'
+      
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: read
+  security-events: write
+  actions: read
+  
+jobs:
+  Pr-Check-Job:
+    uses: ./.github/workflows/_go-pr-check.yml
+    with:
+      service-name: backend
+      runner: ubuntu-latest
+      
+      gitleaks-scan: true
+      
+      trivy-fs-scan: false
+      trivy-fs-scan-path: "."
+      
+      codeql-scan: false
+
+      sonarqube-scan: false
+      #sonar-host-url: ${{ vars.SONAR_HOST_URL }}
+            
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
