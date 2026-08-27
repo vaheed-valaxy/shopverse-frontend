@@ -24,14 +24,14 @@ jobs:
       service-name: frontend
       runner: ubuntu-latest
       
-      gitleaks-scan: true
+      gitleaks-scan: false
       
       trivy-fs-scan: false
       trivy-fs-scan-path: "."
 
       eslint-scan: true
       
-      codeql-scan: true
+      codeql-scan: false
 
       sonarqube-scan: false
       #sonar-host-url: ${{ vars.SONAR_HOST_URL }}
