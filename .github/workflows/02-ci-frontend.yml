@@ -149,8 +149,8 @@ jobs:
       dockerfile: Dockerfile
             
       hadolint-dockerfile-scan: true
-      trivy-dockerfile-scan: false
-      opa-conftest-dockerfile-scan: false
+      trivy-dockerfile-scan: true
+      opa-conftest-dockerfile-scan: true
 
       # =========================================================================
       # Image Build
