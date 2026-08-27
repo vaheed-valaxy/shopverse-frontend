@@ -26,9 +26,7 @@ on:
 jobs:
 
   ESLint-Job:
-
     name: ESLint
-
     runs-on: ${{ inputs.runner }}
 
     permissions:
