@@ -228,7 +228,7 @@ jobs:
 
     if: ${{ inputs.dockerfile-scan }}
 
-    uses: ./.github/workflows/reusable-dockerfile-scan.yml
+    uses: ./.github/workflows/_reusable-dockerfile-scan.yml
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -253,7 +253,7 @@ jobs:
       - Pr-Check-Job
       - Dockerfile-Scan-Job
 
-    uses: ./.github/workflows/reusable-image-build.yml
+    uses: ./.github/workflows/_reusable-image-build.yml
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -284,7 +284,7 @@ jobs:
     needs:
       - Image-Build-Scan-Push-Job
 
-    uses: ./.github/workflows/reusable-image-sign.yml
+    uses: ./.github/workflows/_reusable-image-sign.yml
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -307,7 +307,7 @@ jobs:
     needs:
       - Image-Build-Scan-Push-Job
 
-    uses: ./.github/workflows/reusable-sbom-attestation.yml
+    uses: ./.github/workflows/_reusable-sbom-attestation.yml
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -330,7 +330,7 @@ jobs:
     needs:
       - Image-Build-Scan-Push-Job
 
-    uses: ./.github/workflows/reusable-update-helm-values.yml
+    uses: ./.github/workflows/_reusable-update-helm-values.yml
 
     with:
       service-name: ${{ inputs.service-name }}
