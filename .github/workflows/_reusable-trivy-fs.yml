@@ -1,0 +1,178 @@
+name: Reusable - Trivy FS Scan
+
+on:
+  workflow_call:
+    inputs:
+      # ======================================================
+      # General
+      # ======================================================
+      service-name:
+        description: "Service Name"
+        required: true
+        type: string
+
+      runner:
+        description: "Runner label"
+        required: false
+        type: string
+        default: ubuntu-latest
+
+      # ======================================================
+      # Trivy
+      # ======================================================
+      
+      trivy-version:
+        description: "Trivy version"
+        required: false
+        type: string
+        default: v0.72.0
+        
+      trivy-fs-scan-path:
+        description: "Path to scan"
+        required: false
+        type: string
+        default: "."
+
+jobs:
+
+  Trivy-Fs-Scan-Job:
+    name: Trivy FS Scan
+    runs-on: ${{ inputs.runner }}
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+
+      # ======================================================
+      # Checkout
+      # ======================================================
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # ======================================================
+      # Verify Scan Path
+      # ======================================================
+
+      - name: Verify Scan Path
+        run: |
+          echo "---------------------------------------------- #
+          echo "Service: ${{ inputs.service-name }}"
+          echo "Scan path: ${{ inputs.trivy-fs-scan-path }}"
+          echo "---------------------------------------------- #
+
+          if [ ! -d "${{ inputs.trivy-fs-scan-path }}" ]; then
+            echo "ERROR: Scan path does not exist: ${{ inputs.trivy-fs-scan-path }}"
+            exit 1
+          fi
+          echo " Scan path contents: "
+          ls -la "${{ inputs.trivy-fs-scan-path }}"
+
+      # ======================================================
+      # Install Trivy
+      # ======================================================
+
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@e07451d2e059ed86c2870430ea286b3a9e0bf241
+        with:
+          version: ${{ inputs.trivy-version }}
+          cache: true
+
+      # ======================================================
+      # Verify Trivy
+      # ======================================================
+
+      - name: Verify Trivy Installation
+        run: |
+          echo "Trivy version:"
+          trivy --version
+
+      # ======================================================
+      # Trivy FS Scan → JSON
+      # ======================================================
+
+      - name: Trivy Filesystem Scan
+        continue-on-error: true
+        run: |
+          trivy fs \
+          --severity HIGH,CRITICAL \
+          --ignore-unfixed \
+          --format json \
+          --output trivy-fs-${{ inputs.service-name }}.json \
+          "${{ inputs.trivy-fs-scan-path }}"
+
+      
+
+      # ======================================================
+      # Verify JSON
+      # ======================================================
+
+      - name: Verify JSON File
+        if: always()
+        run: |
+          echo "Checking JSON file..."
+
+          if [ -f "trivy-fs-${{ inputs.service-name }}.json" ]; then
+            echo "JSON file exists"
+            ls -lh "trivy-fs-${{ inputs.service-name }}.json"
+          else
+            echo "ERROR: JSON file was not generated"
+            exit 1
+          fi
+
+      # ======================================================
+      # Upload JSON Artifact
+      # ======================================================
+
+      - name: Upload Trivy FS JSON Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-fs-report-${{ inputs.service-name }}
+          path: trivy-fs-${{ inputs.service-name }}.json
+          if-no-files-found: warn
+          retention-days: 0
+
+      # ======================================================
+      # Convert JSON → SARIF
+      # ======================================================
+
+      - name: Convert Trivy JSON to SARIF
+        if: always()
+        run: |
+          trivy convert \
+            --format sarif \
+            --output trivy-fs-${{ inputs.service-name }}.sarif \
+            trivy-fs-${{ inputs.service-name }}.json
+
+      # ======================================================
+      # Verify SARIF
+      # ======================================================
+
+      - name: Verify SARIF File
+        if: always()
+        run: |
+          echo "Checking SARIF file..."
+
+          if [ -f "trivy-fs-${{ inputs.service-name }}.sarif" ]; then
+            echo "SARIF file exists"
+            ls -lh "trivy-fs-${{ inputs.service-name }}.sarif"
+          else
+            echo "ERROR: SARIF file was not generated"
+            exit 1
+          fi
+
+      # ======================================================
+      # Upload SARIF → GitHub Code Scanning
+      # ======================================================
+
+      - name: Upload Trivy FS SARIF
+        if: ${{ always() && hashFiles(format('trivy-fs-{0}.sarif', inputs.service-name)) != '' }}
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-fs-${{ inputs.service-name }}.sarif
+          category: trivy-fs-${{ inputs.service-name }}
