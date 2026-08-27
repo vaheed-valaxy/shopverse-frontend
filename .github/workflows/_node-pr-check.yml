@@ -49,6 +49,12 @@ on:
         required: false
         type: boolean
         default: false
+
+      eslint:
+        description: "Enable Eslint Scan"
+        required: false
+        type: boolean
+        default: false
         
 
     secrets:
@@ -66,6 +72,14 @@ jobs:
       runner: ${{ inputs.runner }}
     # secrets: inherit
 
+  Eslint-Job:
+    if: ${{ inputs.eslint }} 
+    name: Eslint
+    uses: ./.github/workflows/_reusable-eslint.yml
+    with:
+      service-name: ${{ inputs.service-name }}
+      runner: ${{ inputs.runner }}
+    
   # Sonarqube-Job:
   #   if: ${{ inputs.sonarqube-scan }}
   #   name: Sonarqube
