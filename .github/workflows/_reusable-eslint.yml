@@ -64,7 +64,7 @@ jobs:
         
 
       # ============================================================
-      # ESLint
+      # ESLint Scan
       # ============================================================
 
       - name: Run ESLint
@@ -74,3 +74,18 @@ jobs:
             --report-unused-disable-directives \
             --max-warnings 0 \
             --config .eslintrc.cjs
+            --output eslint-${{ inputs.service-name }}.sarif       # .json
+            
+
+      # ============================================================
+      # Upload ESLint Scan SARIF report to Github
+      # ============================================================
+
+      - name: Upload ESLint SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: eslint-${{ inputs.service-name }}.sarif
+          category: eslint
+
+          
