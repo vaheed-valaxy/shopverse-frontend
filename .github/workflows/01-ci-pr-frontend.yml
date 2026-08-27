@@ -7,8 +7,8 @@ on:
   push:
     branches: ['feat-*', 'fix-*', 'chore-*']
     paths:
-      - 'backend/**'
-      - '.github/workflows/_01-ci-pr-backend.yml'
+      - 'frontend/**'
+      - '.github/workflows/01-ci-pr-frontend.yml'
       
 permissions:
   contents: read
@@ -19,7 +19,7 @@ permissions:
   
 jobs:
   Pr-Check-Job:
-    uses: ./.github/workflows/_go-pr-check.yml
+    uses: ./.github/workflows/_node-pr-check.yml
     with:
       service-name: backend
       runner: ubuntu-latest
