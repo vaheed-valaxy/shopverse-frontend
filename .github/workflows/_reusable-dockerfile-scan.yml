@@ -1,0 +1,164 @@
+name: Reusable - Dockerfile Scan
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+        description: "Service name"
+        required: true
+        type: string
+
+      dockerfile:
+        description: "Path to Dockerfile"
+        required: true
+        type: string
+
+      runner:
+        description: "Runner label"
+        required: false
+        type: string
+        default: ubuntu-latest
+
+      hadolint-dockerfile-scan:
+        description: "Enable Hadolint Dockerfile scan"
+        required: false
+        type: boolean
+        default: false
+
+      trivy-dockerfile-scan:
+        description: "Enable Trivy Dockerfile scan"
+        required: false
+        type: boolean
+        default: false
+
+      opa-conftest-dockerfile-scan:
+        description: "Enable OPA Conftest Dockerfile scan"
+        required: false
+        type: boolean
+        default: false
+
+      opa-policy:
+        description: "Path to OPA policy file"
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  Dockerfile-Scan-Job:
+    name: Dockerfile Scan
+    runs-on: ${{ inputs.runner }}
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+
+      # ============================================================
+      # Checkout
+      # ============================================================
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # ============================================================
+      # Validate Dockerfile
+      # ============================================================
+
+      - name: Verify Dockerfile
+        run: |
+          test -f "${{ inputs.dockerfile }}" || {
+            echo "Dockerfile not found: ${{ inputs.dockerfile }}"
+            exit 1
+          }
+
+      # ============================================================
+      # Hadolint
+      # ============================================================
+
+      - name: Hadolint Dockerfile Scan
+        if: ${{ inputs.hadolint-dockerfile-scan }}
+        uses: hadolint/hadolint-action@v3.3.0
+        with:
+          dockerfile: ${{ inputs.dockerfile }}
+          failure-threshold: error
+          output-file: hadolint-${{ inputs.service-name }}-Dockerfile.txt
+          format: tty
+
+      - name: Upload Hadolint Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hadolint-report-${{ inputs.service-name }}-Dockerfile
+          path: hadolint-${{ inputs.service-name }}-Dockerfile.txt
+          if-no-files-found: warn
+          retention-days: 0
+
+      # ============================================================
+      # Trivy Dockerfile Scan
+      # ============================================================
+
+      - name: Trivy Dockerfile Scan
+        if: ${{ inputs.trivy-dockerfile-scan }}
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          version: v0.72.0
+          scan-type: config
+          scan-ref: ${{ inputs.dockerfile }}
+          format: sarif
+          output: trivy-${{ inputs.service-name }}-dockerfile.sarif
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 0
+
+      # ============================================================
+      # Upload Trivy SARIF
+      # ============================================================
+
+      - name: Upload Trivy Dockerfile SARIF
+        if: ${{ always() && inputs.trivy-dockerfile-scan }}
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-${{ inputs.service-name }}-dockerfile.sarif
+          category: trivy-dockerfile-${{ inputs.service-name }}
+
+      # ============================================================
+      # Verify OPA Policy
+      # ============================================================
+
+      - name: Verify OPA Policy
+        if: ${{ inputs.opa-conftest-dockerfile-scan }}
+        run: |
+          test -n "${{ inputs.opa-policy }}" || {
+            echo "OPA policy input is required when OPA Conftest scan is enabled"
+            exit 1
+          }
+
+          test -f "${{ inputs.opa-policy }}" || {
+            echo "OPA policy file not found: ${{ inputs.opa-policy }}"
+            exit 1
+          }
+
+      # ============================================================
+      # Install Conftest
+      # ============================================================
+
+      - name: Install Conftest
+        if: ${{ inputs.opa-conftest-dockerfile-scan }}
+        run: |
+          wget https://github.com/open-policy-agent/conftest/releases/latest/download/conftest_Linux_x86_64.tar.gz
+          tar xzf conftest_Linux_x86_64.tar.gz
+          sudo mv conftest /usr/local/bin/
+
+      # ============================================================
+      # OPA / Conftest
+      # ============================================================
+
+      - name: OPA Policy Check
+        if: ${{ inputs.opa-conftest-dockerfile-scan }}
+        run: |
+          conftest test \
+            "${{ inputs.dockerfile }}" \
+            --policy "${{ inputs.opa-policy }}"
