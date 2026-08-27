@@ -55,19 +55,26 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache: npm
           
-      - name: Check ESLint
-        run: |
-          node --version
-          npm --version
-          npx eslint --version
-          npm list eslint
-          
+                
       # ============================================================
       # Install Dependencies
       # ============================================================
 
       - name: Install frontend dependencies
         run: npm install    # npm ci
+
+      # Check ESlint Version
+      - name: Check ESLint
+        run: |
+          echo "Node Version:"
+          node --version
+
+          echo "Npm Version:"
+          npm --version
+
+          echo "Eslint Version"
+          npx eslint --version
+          npm list eslint
         
 
       # ============================================================
@@ -75,6 +82,8 @@ jobs:
       # ============================================================
 
       - name: Run ESLint
+        id: eslint
+        continue-on-error: true
         run: |
           npx eslint . \
             --ext js,jsx,ts,tsx \
@@ -82,7 +91,7 @@ jobs:
             --max-warnings 0 \
             --config .eslintrc.cjs \
             --format sarif \
-            --output eslint-${{ inputs.service-name }}.sarif       # .json
+             --format json > eslint-${{ inputs.service-name }}.sarif      # .json
             
 
       # ============================================================
@@ -95,5 +104,21 @@ jobs:
         with:
           sarif_file: eslint-${{ inputs.service-name }}.sarif
           category: eslint
+
+
+      # ============================================================
+      # Fail pipeline if ESLint failed
+      # ============================================================
+
+      - name: Enforce ESLint policy
+        if: steps.eslint.outcome == 'failure'
+        run: |
+          echo "❌ ESLint found errors."
+          exit 1
+
+      - name: ESLint passed
+        if: steps.eslint.outcome == 'success'
+        run: |
+          echo "✅ ESLint passed."
 
           
