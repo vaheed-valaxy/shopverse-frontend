@@ -42,7 +42,7 @@ jobs:
           node-version: "18"
 
       - name: Run frontend lint
-        working-directory: ./frontend
+        # working-directory: ./frontend
         run: npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --config .eslintrc.cjs
 
       - name: Create CodeQL configuration
