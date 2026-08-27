@@ -55,7 +55,13 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache: npm
           
-
+      - name: Check ESLint
+        run: |
+          node --version
+          npm --version
+          npx eslint --version
+          npm list eslint
+          
       # ============================================================
       # Install Dependencies
       # ============================================================
