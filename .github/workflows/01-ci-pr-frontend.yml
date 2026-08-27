@@ -29,7 +29,7 @@ jobs:
       trivy-fs-scan: false
       trivy-fs-scan-path: "."
       
-      codeql-scan: false
+      codeql-scan: true
 
       sonarqube-scan: false
       #sonar-host-url: ${{ vars.SONAR_HOST_URL }}
