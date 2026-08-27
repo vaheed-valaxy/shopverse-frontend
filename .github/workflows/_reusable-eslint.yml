@@ -1,3 +1,81 @@
 - name: Run frontend lint
         # working-directory: ./frontend
         run: npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --config .eslintrc.cjs
+
+
+name: Reusable - ESLint
+
+on:
+  workflow_call:
+
+    inputs:
+
+      service-name:
+        description: "Service Name"
+        required: true
+        type: string
+
+      runner:
+        description: "Runner label"
+        required: false
+        type: string
+        default: ubuntu-latest
+
+      node-version:
+        description: "Node.js version"
+        required: false
+        type: string
+        default: "18"
+
+
+jobs:
+
+  ESLint-Job:
+
+    name: ESLint
+
+    runs-on: ${{ inputs.runner }}
+
+    permissions:
+      contents: read
+
+    steps:
+
+      # ============================================================
+      # Checkout
+      # ============================================================
+
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+
+      # ============================================================
+      # Setup Node.js
+      # ============================================================
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+
+
+      # ============================================================
+      # Install Dependencies
+      # ============================================================
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+
+      # ============================================================
+      # ESLint
+      # ============================================================
+
+      - name: Run ESLint
+        run: |
+          npx eslint . \
+            --ext js,jsx,ts,tsx \
+            --report-unused-disable-directives \
+            --max-warnings 0 \
+            --config .eslintrc.cjs
