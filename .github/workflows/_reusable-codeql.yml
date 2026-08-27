@@ -45,13 +45,13 @@ jobs:
         # working-directory: ./frontend
         run: npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --config .eslintrc.cjs
 
-      - name: Create CodeQL configuration
-        run: |
-          cat > codeql-config.yml <<EOF
-          name: Go CodeQL
-          paths:
-            - ${{ inputs.service-name }}
-          EOF
+      # - name: Create CodeQL configuration
+      #   run: |
+      #     cat > codeql-config.yml <<EOF
+      #     name: Go CodeQL
+      #     paths:
+      #       - ${{ inputs.service-name }}
+      #     EOF
 
       # ============================================================
       # Initialize CodeQL
