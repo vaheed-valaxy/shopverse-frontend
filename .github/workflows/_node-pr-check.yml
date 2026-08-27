@@ -92,14 +92,14 @@ jobs:
   #   secrets:
   #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  # Trivy-Fs-Scan-Job:
-  #   if: ${{ inputs.trivy-fs-scan }}
-  #   name: Trivy Fs Scan
-  #   uses: ./.github/workflows/reusable-trivy-fs.yml
-  #   with:
-  #     service-name: ${{ inputs.service-name }}
-  #     runner: ${{ inputs.runner }}
-  #     trivy-fs-scan-path: ${{ inputs.trivy-fs-scan-path }}
+  Trivy-Fs-Scan-Job:
+    if: ${{ inputs.trivy-fs-scan }}
+    name: Trivy Fs Scan
+    uses: ./.github/workflows/_reusable-trivy-fs.yml
+    with:
+      service-name: ${{ inputs.service-name }}
+      runner: ${{ inputs.runner }}
+      trivy-fs-scan-path: ${{ inputs.trivy-fs-scan-path }}
 
   Codeql-Analysis-Job:
     if: ${{ inputs.codeql-scan }}
