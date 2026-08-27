@@ -26,10 +26,10 @@ jobs:
       
       gitleaks-scan: false
       
-      trivy-fs-scan: false
+      trivy-fs-scan: true
       trivy-fs-scan-path: "."
 
-      eslint-scan: true
+      eslint-scan: false
       
       codeql-scan: false
 
