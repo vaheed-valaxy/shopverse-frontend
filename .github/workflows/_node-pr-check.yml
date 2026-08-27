@@ -50,7 +50,7 @@ on:
         type: boolean
         default: false
 
-      eslint:
+      eslint-scan:
         description: "Enable Eslint Scan"
         required: false
         type: boolean
@@ -73,7 +73,7 @@ jobs:
     # secrets: inherit
 
   Eslint-Job:
-    if: ${{ inputs.eslint }} 
+    if: ${{ inputs.eslint-scan }} 
     name: Eslint
     uses: ./.github/workflows/_reusable-eslint.yml
     with:
