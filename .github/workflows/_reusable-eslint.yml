@@ -131,7 +131,7 @@ jobs:
       # Fail pipeline if ESLint failed
       # ============================================================
 
-      - name: Enforce ESLint policy
+      - name: ESLint failed
         if: steps.eslint.outcome == 'failure'
         run: |
           echo "❌ ESLint found errors."
