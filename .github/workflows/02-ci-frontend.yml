@@ -119,7 +119,7 @@ jobs:
     needs:
       - Aws-Params-Job
 
-    uses: ./.github/workflows/_go-build.yml
+    uses: ./.github/workflows/_node-build.yml
 
     with:
 
