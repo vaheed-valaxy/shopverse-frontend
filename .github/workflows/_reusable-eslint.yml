@@ -75,6 +75,7 @@ jobs:
           echo "Eslint Version"
           npx eslint --version
           npm list eslint
+          npm list @microsoft/eslint-formatter-sarif
         
 
       # ============================================================
@@ -90,7 +91,8 @@ jobs:
             --report-unused-disable-directives \
             --max-warnings 0 \
             --config .eslintrc.cjs \
-            --format sarif > eslint-${{ inputs.service-name }}.sarif      
+            --format @microsoft/eslint-formatter-sarif \
+            --output-file eslint-${{ inputs.service-name }}.sarif
             
 
       # ============================================================
@@ -102,7 +104,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: eslint-${{ inputs.service-name }}.sarif
-          category: eslint
+          category: eslint--${{ inputs.service-name }}
+          wait-for-processing: true
 
 
       # ============================================================
