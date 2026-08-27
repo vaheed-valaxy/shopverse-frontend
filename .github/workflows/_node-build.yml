@@ -272,7 +272,7 @@ jobs:
   Image-Sign-Job:
     name: Image Sign
 
-    if: ${{ inputs.image-sign }}
+    if: ${{ inputs.image-sign && inputs.image-build && inputs.image-push-ecr }}
 
     needs:
       - Image-Build-Scan-Push-Job
