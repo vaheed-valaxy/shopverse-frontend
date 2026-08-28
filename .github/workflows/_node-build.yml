@@ -168,6 +168,12 @@ on:
       # GitOps
       # ======================================================
 
+      update-helm-values:
+        description: "Enable update helm values"
+        required: false
+        type: boolean
+        default: false
+
       gitops-repo:
         description: "GitOps Repository"
         required: false
@@ -324,9 +330,9 @@ jobs:
 
   Update-Helm-Values-Pr-Job:
     name: Update Helm Values and Create PR
-
-    if: ${{ inputs.image-build }}
-
+    
+    if: ${{ inputs.image-build && inputs.update-helm-values }}
+    
     needs:
       - Image-Build-Scan-Push-Job
 
