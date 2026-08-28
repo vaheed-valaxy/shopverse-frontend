@@ -220,11 +220,11 @@ jobs:
           IMAGE_WITH_TAG="${{ steps.image-build.outputs.image_with_tag }}"
           IMAGE_WITH_LATEST=$IMAGE:latest
 
-          echo " *** Pushing Docker Image With SHA-Tag *** "
+          echo "*** Pushing Docker Image With SHA-Tag ***"
           docker push "$IMAGE_WITH_TAG"
 
           docker tag "$IMAGE_WITH_TAG" "$IMAGE_WITH_LATEST"
-          echo " *** Pushing Docker Image With LATEST-Tag *** "
+          echo "*** Pushing Docker Image With LATEST-Tag ***"
           docker push "$IMAGE_WITH_LATEST"
 
           # Capture the content-addressable DIGEST for immutable signing reference
