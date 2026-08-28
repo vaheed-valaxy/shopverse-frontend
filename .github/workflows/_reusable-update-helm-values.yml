@@ -76,7 +76,7 @@ jobs:
             exit 1
           fi
 
-          echo "Values file found: $VALUES_FILE"
+          echo "Helm values file found: $VALUES_FILE"
           
       # --------------------------------------------------
       # Print Image and Digest
@@ -192,6 +192,6 @@ jobs:
 
           This PR was automatically created by the **CI pipeline**.
 
-          After merge, Argo CD will reconcile the updated Helm values.
+          *After merge*, Argo CD will reconcile the updated Helm values.
           EOF
           )"
