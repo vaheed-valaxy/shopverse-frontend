@@ -93,16 +93,25 @@ jobs:
       image_with_tag: ${{ steps.push.outputs.image_with_tag }}
 
     steps:
+      # -------------------------------------------------------------------
+      # Code Checkout
+      # -------------------------------------------------------------------
       - name: Checkout Code
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
+          
+      # -------------------------------------------------------------------
+      # Set Image Tag
+      # -------------------------------------------------------------------
       - name: Set Image Tag
         id: meta
         run: |
           echo "image_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-
+          
+      # -------------------------------------------------------------------
+      # Build Docker Image
+      # -------------------------------------------------------------------
       - name: Build Image
         if: ${{ inputs.image-build }}
         id: image-build
@@ -118,7 +127,10 @@ jobs:
 
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
           echo "image_with_tag=$IMAGE_WITH_TAG" >> "$GITHUB_OUTPUT"
-
+          
+      # -------------------------------------------------------------------
+      # Scan Docker Image using Trivy
+      # -------------------------------------------------------------------
       - name: Trivy — Image vulnerability scan
         if: ${{ inputs.image-scan }}
         uses: aquasecurity/trivy-action@v0.36.0
@@ -130,7 +142,10 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: 0
-
+          
+      # -------------------------------------------------------------------
+      # Upload Scan Results to Github
+      # -------------------------------------------------------------------
       - name: Upload Trivy Image SARIF to GitHub Security tab
         if: always()
         uses: github/codeql-action/upload-sarif@v4
@@ -141,7 +156,8 @@ jobs:
       - name: Verify AWS CLI
         if: ${{ inputs.image-push-ecr }}
         run: aws --version
-############################################################################
+        
+      #####################      Some Debug      ################################
       - name: Debug GitHub OIDC Claims
         run: |
           echo "Repository : $GITHUB_REPOSITORY"
@@ -166,23 +182,36 @@ jobs:
             ref,
             event_name
           }'
-######################################################################################
+      #####################################################################
+
+      # -------------------------------------------------------------------
+      # Configure AWS Credentials
+      # -------------------------------------------------------------------
       - name: Configure AWS credentials (OIDC)
         if: ${{ inputs.image-push-ecr }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ inputs.aws-ecr-role-arn }}
           aws-region: ${{ inputs.aws-region }}
-
+          
+      # -------------------------------------------------------------------
+      # Verify AWS Identity
+      # -------------------------------------------------------------------
       - name: Verify AWS identity
         if: ${{ inputs.image-push-ecr }}
         run: aws sts get-caller-identity  
 
+      # -------------------------------------------------------------------
+      # Login to AWS ECR
+      # -------------------------------------------------------------------
       - name: Login to Amazon ECR
         if: ${{ inputs.image-push-ecr }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      # -------------------------------------------------------------------
+      # Push Image to ECR
+      # -------------------------------------------------------------------
       - name: Push image to ECR
         if: ${{ inputs.image-push-ecr }}
         id: push
@@ -191,11 +220,11 @@ jobs:
           IMAGE_WITH_TAG="${{ steps.image-build.outputs.image_with_tag }}"
           IMAGE_WITH_LATEST=$IMAGE:latest
 
-          echo " Pushing Docker Image With SHA-Tag"
+          echo " *** Pushing Docker Image With SHA-Tag *** "
           docker push "$IMAGE_WITH_TAG"
 
           docker tag "$IMAGE_WITH_TAG" "$IMAGE_WITH_LATEST"
-          echo " Pushing Docker Image With LATEST-Tag"
+          echo " *** Pushing Docker Image With LATEST-Tag *** "
           docker push "$IMAGE_WITH_LATEST"
 
           # Capture the content-addressable DIGEST for immutable signing reference
