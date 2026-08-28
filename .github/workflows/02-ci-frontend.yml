@@ -73,7 +73,7 @@ env:
   AWS_REGION: us-east-1
   AWS_ECR_ROLE_ARN: ${{ vars.AWS_ECR_ROLE_ARN }}
   ECR_REPOSITORY: "shopverse/frontend"
-  # GITOPS_REPO: ${{ vars.GITOPS_REPO }}
+  GITOPS_REPO: ${{ vars.GITOPS_REPO }}
 
 # =======================================================================================
 # Jobs
@@ -142,9 +142,9 @@ jobs:
       # =========================================================================
 
       gitleaks-scan: true
-      eslint-scan: false
-      trivy-fs-scan: false
-      codeql-scan: false
+      eslint-scan: true
+      trivy-fs-scan: true
+      codeql-scan: true
       sonarqube-scan: false
       sonar-host-url: ""
 
@@ -156,7 +156,7 @@ jobs:
       dockerfile: Dockerfile
             
       hadolint-dockerfile-scan: true
-      trivy-dockerfile-scan: false
+      trivy-dockerfile-scan: true
       opa-conftest-dockerfile-scan: false
 
       # =========================================================================
