@@ -192,7 +192,7 @@ jobs:
           IMAGE_WITH_LATEST=$IMAGE:latest
           
           docker push "$IMAGE_WITH_TAG"
-          docker push "IMAGE_WITH_LATEST"
+          docker push "$IMAGE_WITH_LATEST"
 
           # Capture the content-addressable DIGEST for immutable signing reference
           DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_WITH_TAG" | awk -F@ '{print $2}')
