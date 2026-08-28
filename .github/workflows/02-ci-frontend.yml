@@ -72,7 +72,7 @@ env:
   AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
   AWS_REGION: us-east-1
   AWS_ECR_ROLE_ARN: ${{ vars.AWS_ECR_ROLE_ARN }}
-  ECR_REPOSITORY: "ecommerce/frontend"
+  ECR_REPOSITORY: "shopverse/frontend"
   # GITOPS_REPO: ${{ vars.GITOPS_REPO }}
 
 # =======================================================================================
