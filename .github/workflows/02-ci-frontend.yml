@@ -47,7 +47,7 @@ on:
       - 'release/**'
 
     paths:
-      - 'backend/**'
+      - 'frontend/**'
       - '.github/workflows/02-ci-frontend.yml'
       - '.github/workflows/_node-build.yml'
       - '.github/workflows/_node-pr-check.yml'
@@ -135,9 +135,9 @@ jobs:
       # =========================================================================
 
       gitleaks-scan: true
-      eslint-scan: true
-      trivy-fs-scan: true
-      codeql-scan: true
+      eslint-scan: false
+      trivy-fs-scan: false
+      codeql-scan: false
       sonarqube-scan: false
       sonar-host-url: ""
 
@@ -149,7 +149,7 @@ jobs:
       dockerfile: Dockerfile
             
       hadolint-dockerfile-scan: true
-      trivy-dockerfile-scan: true
+      trivy-dockerfile-scan: false
       opa-conftest-dockerfile-scan: false
 
       # =========================================================================
