@@ -189,7 +189,8 @@ jobs:
       # =========================================================================
       # GitOps
       # =========================================================================
-
+      
+      update-helm-values: false
       gitops-repo: ${{ vars.GITOPS_REPO }}
       helm-values-file: envs/dev/values-backend.yaml
 
