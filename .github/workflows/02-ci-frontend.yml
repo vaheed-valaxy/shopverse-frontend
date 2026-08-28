@@ -96,7 +96,7 @@ jobs:
       aws-ecr-role-arn: ${{ steps.aws-params.outputs.aws-ecr-role-arn }}
 
     steps:
-      - name: Show GitHub Repository ID
+      - name: Show GitHub Repository IDs
         run: |
           echo "Repository       : ${{ github.repository }}"
           echo "Repository Owner : ${{ github.repository_owner }}"
