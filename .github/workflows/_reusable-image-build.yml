@@ -176,7 +176,12 @@ jobs:
 
       - name: Verify AWS identity
         if: ${{ inputs.image-push-ecr }}
-        run: aws sts get-caller-identity    
+        run: aws sts get-caller-identity  
+
+      - name: Login to Amazon ECR
+        if: ${{ inputs.image-push-ecr }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Push image to ECR
         if: ${{ inputs.image-push-ecr }}
