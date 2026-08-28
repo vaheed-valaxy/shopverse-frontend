@@ -114,7 +114,7 @@ jobs:
 # =======================================================================================
 
   CI-Job:
-    name: Backend CI/CD
+    name: Frontend CI/CD
 
     needs:
       - Aws-Params-Job
