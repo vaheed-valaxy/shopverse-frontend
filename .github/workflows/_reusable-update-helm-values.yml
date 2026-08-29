@@ -86,8 +86,8 @@ jobs:
 
       - name: Print Image and Digest
         run: |
-          echo "Image : ${{ inputs.image }}"
-          echo "Digest: ${{ inputs.image-digest }}"
+          echo "Image : $IMAGE"
+          echo "Digest: $DIGEST"
 
           
       # --------------------------------------------------
@@ -125,6 +125,9 @@ jobs:
           # sed -i "s|digest: .*|digest: $DIGEST|g" "$VALUES_FILE"
           
           yq -i '.image.digest = strenv(DIGEST)' "$VALUES_FILE"
+
+          echo "Updated digest:"
+          yq '.image.digest' "$VALUES_FILE"
 
       # --------------------------------------------------
       # Show updated values
