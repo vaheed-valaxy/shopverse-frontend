@@ -50,6 +50,8 @@ jobs:
     env:
       GITOPS_DIR: "_gitops"
       VALUES_FILE: "${{ inputs.helm-values-file }}"
+      IMAGE: "${{ inputs.image }}"
+      DIGEST: "${{ inputs.image-digest }}"
 
     steps:
 
@@ -111,8 +113,8 @@ jobs:
       - name: Update Image Digest
         working-directory: ${{ env.GITOPS_DIR }}
         run: |
-          IMAGE="${{ inputs.image }}"
-          DIGEST="${{ inputs.image-digest }}"
+          # IMAGE="${{ inputs.image }}"
+          # DIGEST="${{ inputs.image-digest }}"
 
           echo "----------- Updating ---------------"
           echo "File   : $VALUES_FILE"
