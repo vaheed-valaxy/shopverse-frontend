@@ -192,7 +192,7 @@ jobs:
       
       update-helm-values: true
       gitops-repo: ${{ vars.GITOPS_REPO }}
-      helm-values-file: envs/dev/values-backend.yaml
+      helm-values-file: envs/dev/helm/frontend/values.yaml  
 
     secrets:
 
