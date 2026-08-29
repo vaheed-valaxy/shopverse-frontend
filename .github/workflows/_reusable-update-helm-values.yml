@@ -201,14 +201,14 @@ jobs:
             --body "$(cat <<EOF
           ## Image Update
 
-          **Service:** $SERVICE_NAME
+          **Service:** `$SERVICE_NAME`
 
-          **Image:** $IMAGE
+          **Image:** `$IMAGE`
 
-          **Digest:** $DIGEST
+          **Digest:** `$DIGEST`
 
-          This PR was automatically created by the **CI pipeline**.
+          This PR was automatically created by: **CI pipeline**.
 
-          *After merge*, Argo CD will reconcile the updated Helm values.
+          ***After merge***, Argo CD will reconcile the updated Helm values.
           EOF
           )"
