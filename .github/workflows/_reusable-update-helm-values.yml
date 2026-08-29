@@ -87,6 +87,23 @@ jobs:
           echo "Image : ${{ inputs.image }}"
           echo "Digest: ${{ inputs.image-digest }}"
 
+          
+      # --------------------------------------------------
+      # Install YQ
+      # --------------------------------------------------
+
+      - name: Install yq
+        run: |
+          YQ_VERSION="v4.47.2"
+      
+          sudo wget -qO /usr/local/bin/yq \
+            "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
+      
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Verify yq
+        run: yq --version
+
       # --------------------------------------------------
       # Update Helm values
       # --------------------------------------------------
