@@ -150,7 +150,7 @@ jobs:
         id: branch
         working-directory: ${{ env.GITOPS_DIR }}
         run: |
-          BRANCH="ci/update-${{ inputs.service-name }}-${GITHUB_SHA::7}"
+          BRANCH="ci/update-${{ inputs.service-name }}-${GITHUB_SHA::7}-${GITHUB_RUN_ID}"
 
           git checkout -b "$BRANCH"
 
