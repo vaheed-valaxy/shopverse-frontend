@@ -28,7 +28,7 @@ jobs:
       
       trivy-fs-scan: true
       trivy-fs-scan-path: "."
-      trivy-fs-skip-files:
+      trivy-fs-skip-files: |
         **/README.md
         **/LICENSE
         **/docs/**
