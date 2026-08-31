@@ -206,9 +206,8 @@ jobs:
   # ============================================================
 
   Pr-Check-Job:
-    name: PR Check Job
-
-    uses: ./.github/workflows/_node-pr-check.yml
+    # name: PR Check Job
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/_node-pr-check.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -230,11 +229,9 @@ jobs:
   # ============================================================
 
   Dockerfile-Scan-Job:
-    name: Dockerfile Scan Job
-
+    # name: Dockerfile Scan Job
     if: ${{ inputs.dockerfile-scan }}
-
-    uses: ./.github/workflows/_reusable-dockerfile-scan.yml
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-dockerfile-scan.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -251,15 +248,14 @@ jobs:
   # ============================================================
 
   Image-Build-Scan-Push-Job:
-    name: Docker Image Build-Scan-Push Job
-
+    # name: Docker Image Build-Scan-Push Job
     if: ${{ inputs.image-build }}
 
     needs:
       - Pr-Check-Job
       - Dockerfile-Scan-Job
 
-    uses: ./.github/workflows/_reusable-image-build.yml
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-image-build.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -283,14 +279,13 @@ jobs:
   # ============================================================
 
   Image-Sign-Job:
-    name: Image Sign
-
+    # name: Image Sign
     if: ${{ inputs.image-sign && inputs.image-build && inputs.image-push-ecr }}
 
     needs:
       - Image-Build-Scan-Push-Job
 
-    uses: ./.github/workflows/_reusable-image-sign.yml
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-image-sign.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -306,14 +301,13 @@ jobs:
   # ============================================================
 
   Generate-Attest-SBOM-Job:
-    name: Generate and Attest SBOM
-
+    # name: Generate and Attest SBOM
     if: ${{ inputs.image-sbom }}
 
     needs:
       - Image-Build-Scan-Push-Job
 
-    uses: ./.github/workflows/_reusable-sbom-attestation.yml
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-sbom-attestation.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
@@ -336,7 +330,7 @@ jobs:
     needs:
       - Image-Build-Scan-Push-Job
 
-    uses: ./.github/workflows/_reusable-update-helm-values.yml
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-update-helm-values.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
