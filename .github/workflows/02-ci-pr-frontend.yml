@@ -112,6 +112,7 @@ jobs:
           echo "ecr-repository=$ECR_REPOSITORY" >> "$GITHUB_OUTPUT"
           echo "aws-region=$AWS_REGION" >> "$GITHUB_OUTPUT"
           echo "aws-ecr-role-arn=$AWS_ECR_ROLE_ARN" >> "$GITHUB_OUTPUT"
+          
           echo "ECR Registry : $ECR_REGISTRY"
           echo "ECR Repository : $ECR_REPOSITORY"
           echo "AWS Region : $AWS_REGION"
