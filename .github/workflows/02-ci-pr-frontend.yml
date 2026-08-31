@@ -168,7 +168,7 @@ jobs:
       build-context: "."
 
       image-scan: true
-      image-push-ecr: false
+      image-push-ecr: true
       
       ecr-registry: ${{ needs.Aws-Params-Job.outputs.ecr-registry }}
       ecr-repository: ${{ needs.Aws-Params-Job.outputs.ecr-repository }}
@@ -179,19 +179,19 @@ jobs:
       # Image Signing
       # =========================================================================
       
-      image-sign: false
+      image-sign: true
       
       # =========================================================================
       # SBOM
       # =========================================================================
 
-      image-sbom: false
+      image-sbom: true
 
       # =========================================================================
       # GitOps
       # =========================================================================
       
-      update-helm-values: false
+      update-helm-values: true
       gitops-repo: ${{ vars.GITOPS_REPO }}
       helm-values-file: envs/dev/values-frontend.yaml  
 
