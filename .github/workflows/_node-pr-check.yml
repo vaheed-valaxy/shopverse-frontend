@@ -75,7 +75,7 @@ jobs:
   Eslint-Job:
     if: ${{ inputs.eslint-scan }} 
     name: Eslint
-    uses: ./.github/workflows/_reusable-eslint.yml
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-nodejs-eslint.yml@main
     with:
       service-name: ${{ inputs.service-name }}
       runner: ${{ inputs.runner }}
