@@ -1,0 +1,110 @@
+name: Reusable — Node PR Check (no Docker)
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+        description: "Service Name"
+        required: true
+        type: string
+
+      runner:
+        description: "Runner label"
+        required: false
+        type: string
+        default: ubuntu-latest
+
+      sonarqube-scan:
+        description: "Enable SonarQube Scan"
+        required: false
+        type: boolean
+        default: false
+
+      sonar-host-url:
+        description: "Sonarqube Host Url"
+        required: false
+        type: string
+        default: ""
+
+      gitleaks-scan:
+        description: "Enable Gitleaks Scan"
+        required: false
+        type: boolean
+        default: false
+
+      trivy-fs-scan:
+        description: "Enable Trivy FS Scan"
+        required: false
+        type: boolean
+        default: false
+
+      trivy-fs-scan-path:
+        description: "Path to scan"
+        required: false
+        type: string
+        default: "."
+
+      codeql-scan:
+        description: "Enable Codeql Scan"
+        required: false
+        type: boolean
+        default: false
+
+      eslint-scan:
+        description: "Enable Eslint Scan"
+        required: false
+        type: boolean
+        default: false
+        
+
+    secrets:
+      SONAR_TOKEN:
+        required: false    
+  
+jobs:
+  
+  Gitleaks-Job:
+    if: ${{ inputs.gitleaks-scan }}
+    name: Gitleaks
+    uses: ./.github/workflows/_reusable-gitleaks.yml
+    with:
+      service-name: ${{ inputs.service-name }} 
+      runner: ${{ inputs.runner }}
+    # secrets: inherit
+
+  Eslint-Job:
+    if: ${{ inputs.eslint-scan }} 
+    name: Eslint
+    uses: ./.github/workflows/_reusable-eslint.yml
+    with:
+      service-name: ${{ inputs.service-name }}
+      runner: ${{ inputs.runner }}
+    
+  # Sonarqube-Job:
+  #   if: ${{ inputs.sonarqube-scan }}
+  #   name: Sonarqube
+  #   uses: ./.github/workflows/_reusable-sonarqube.yml
+  #   with:
+  #     service-name: ${{ inputs.service-name }} 
+  #     runner: ${{ inputs.runner }}
+  #     sonar-host-url: ${{ inputs.sonar-host-url }}
+            
+  #   secrets:
+  #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  Trivy-Fs-Scan-Job:
+    if: ${{ inputs.trivy-fs-scan }}
+    name: Trivy Fs Scan
+    uses: ./.github/workflows/_reusable-trivy-fs.yml
+    with:
+      service-name: ${{ inputs.service-name }}
+      runner: ${{ inputs.runner }}
+      trivy-fs-scan-path: ${{ inputs.trivy-fs-scan-path }}
+
+  Codeql-Analysis-Job:
+    if: ${{ inputs.codeql-scan }}
+    name: Codeql Analysis
+    uses: ./.github/workflows/_reusable-codeql.yml
+    with:
+      service-name: ${{ inputs.service-name }}
+      runner: ${{ inputs.runner }}
