@@ -1,0 +1,40 @@
+name: PR Check — frontend
+# Runs on feature/fix/chore branches.
+# Lint + test + SAST only. No Docker, no ECR, no deploy.
+on:
+  workflow_dispatch: 
+  
+  push:
+    branches: ['feat-*', 'fix-*', 'chore-*']
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/01-ci-pr-frontend.yml'
+      
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: read
+  security-events: write
+  actions: read
+  
+jobs:
+  Pr-Check-Job:
+    uses: ./.github/workflows/_node-pr-check.yml
+    with:
+      service-name: frontend
+      runner: ubuntu-latest
+      
+      gitleaks-scan: true
+      
+      trivy-fs-scan: true
+      trivy-fs-scan-path: "."
+
+      eslint-scan: true
+      
+      codeql-scan: true
+
+      sonarqube-scan: false
+      #sonar-host-url: ${{ vars.SONAR_HOST_URL }}
+            
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
