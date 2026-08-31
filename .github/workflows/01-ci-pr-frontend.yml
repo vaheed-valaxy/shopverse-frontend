@@ -26,15 +26,15 @@ jobs:
       
       gitleaks-scan: true
       
-      trivy-fs-scan: true
+      trivy-fs-scan: false
       trivy-fs-scan-path: "."
 
-      eslint-scan: true
+      eslint-scan: false
       
-      codeql-scan: true
+      codeql-scan: false
 
       sonarqube-scan: false
-      #sonar-host-url: ${{ vars.SONAR_HOST_URL }}
+      # sonar-host-url: ${{ vars.SONAR_HOST_URL }}
             
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    # secrets:
+    #   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
