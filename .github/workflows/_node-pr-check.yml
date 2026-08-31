@@ -44,6 +44,12 @@ on:
         type: string
         default: "."
 
+      trivy-fs-skip-files:
+        description: "Newline-separated files or glob patterns to skip"
+        required: false
+        type: string
+        default: ""
+
       codeql-scan:
         description: "Enable Codeql Scan"
         required: false
@@ -100,6 +106,7 @@ jobs:
       service-name: ${{ inputs.service-name }}
       runner: ${{ inputs.runner }}
       trivy-fs-scan-path: ${{ inputs.trivy-fs-scan-path }}
+      trivy-fs-skip-files: ${{ inputs.trivy-fs-skip-files }}
 
   Codeql-Analysis-Job:
     if: ${{ inputs.codeql-scan }}
