@@ -207,7 +207,7 @@ jobs:
 
   Pr-Check-Job:
     # name: PR Check Job
-    uses: vaheed-valaxy/central-github-actions/.github/workflows/_node-pr-check.yml@main
+    uses: ./.github/workflows/_node-pr-check.yml
 
     with:
       service-name: ${{ inputs.service-name }}
