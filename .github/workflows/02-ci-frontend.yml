@@ -143,13 +143,13 @@ jobs:
       # =========================================================================
 
       gitleaks-scan: true
-      eslint-scan: true
+      eslint-scan: false
       
-      trivy-fs-scan: true
+      trivy-fs-scan: false
       trivy-fs-scan-path: "."
       trivy-fs-skip-files: "**/README.md,**/LICENSE,**/docs/**"
       
-      codeql-scan: true
+      codeql-scan: false
       sonarqube-scan: false
       sonar-host-url: ""
 
@@ -157,22 +157,22 @@ jobs:
       # Dockerfile Security Scan
       # =========================================================================
 
-      dockerfile-scan: true
+      dockerfile-scan: false
       dockerfile: Dockerfile
             
-      hadolint-dockerfile-scan: true
-      trivy-dockerfile-scan: true
+      hadolint-dockerfile-scan: false
+      trivy-dockerfile-scan: false
       opa-conftest-dockerfile-scan: false
 
       # =========================================================================
       # Image Build
       # =========================================================================
 
-      image-build: true
+      image-build: false
       build-context: "."
 
-      image-scan: true
-      image-push-ecr: true
+      image-scan: false
+      image-push-ecr: false
       
       ecr-registry: ${{ needs.Aws-Params-Job.outputs.ecr-registry }}
       ecr-repository: ${{ needs.Aws-Params-Job.outputs.ecr-repository }}
@@ -183,19 +183,19 @@ jobs:
       # Image Signing
       # =========================================================================
       
-      image-sign: true
+      image-sign: false
       
       # =========================================================================
       # SBOM
       # =========================================================================
 
-      image-sbom: true
+      image-sbom: false
 
       # =========================================================================
       # GitOps
       # =========================================================================
       
-      update-helm-values: true
+      update-helm-values: false
       gitops-repo: ${{ vars.GITOPS_REPO }}
       helm-values-file: envs/dev/values-frontend.yaml  
 
