@@ -157,10 +157,10 @@ jobs:
       # Dockerfile Security Scan
       # =========================================================================
 
-      dockerfile-scan: false
+      dockerfile-scan: true
       dockerfile: Dockerfile
             
-      hadolint-dockerfile-scan: false
+      hadolint-dockerfile-scan: true
       trivy-dockerfile-scan: false
       opa-conftest-dockerfile-scan: false
 
