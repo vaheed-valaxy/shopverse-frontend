@@ -168,11 +168,11 @@ jobs:
       # Image Build
       # =========================================================================
 
-      image-build: false
+      image-build: true
       build-context: "."
 
-      image-scan: false
-      image-push-ecr: false
+      image-scan: true
+      image-push-ecr: true
       
       ecr-registry: ${{ needs.Aws-Params-Job.outputs.ecr-registry }}
       ecr-repository: ${{ needs.Aws-Params-Job.outputs.ecr-repository }}
