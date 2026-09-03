@@ -143,13 +143,13 @@ jobs:
       # =========================================================================
 
       gitleaks-scan: true
-      eslint-scan: false
+      eslint-scan: true
       
-      trivy-fs-scan: false
+      trivy-fs-scan: true
       trivy-fs-scan-path: "."
       trivy-fs-skip-files: "**/README.md,**/LICENSE,**/docs/**"
       
-      codeql-scan: false
+      codeql-scan: true
       sonarqube-scan: false
       sonar-host-url: ""
 
@@ -161,7 +161,7 @@ jobs:
       dockerfile: Dockerfile
             
       hadolint-dockerfile-scan: true
-      trivy-dockerfile-scan: false
+      trivy-dockerfile-scan: true
       opa-conftest-dockerfile-scan: false
 
       # =========================================================================
@@ -183,13 +183,13 @@ jobs:
       # Image Signing
       # =========================================================================
       
-      image-sign: false
+      image-sign: true
       
       # =========================================================================
       # SBOM
       # =========================================================================
 
-      image-sbom: false
+      image-sbom: true
 
       # =========================================================================
       # GitOps
