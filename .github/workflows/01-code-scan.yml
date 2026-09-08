@@ -65,7 +65,7 @@ jobs:
   Code-Scan-Job:
     needs: Config-Job
 
-    uses: ./.github/workflows/_node-pr-check.yml
+    uses: ./.github/workflows/_node-code-scan.yml
 
     permissions:
       contents: read
