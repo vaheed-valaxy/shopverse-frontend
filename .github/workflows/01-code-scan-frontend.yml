@@ -188,7 +188,7 @@ jobs:
           **Target branch:** \`develop\`
           **Workflow run:** ${SERVER_URL}/${REPOSITORY}/actions/runs/${RUN_ID} 
 
-          ### Security checks passed
+          ### Security checks passed:
 
           - ✔️ Gitleaks  
           - ✔️ ES Lint
