@@ -11,6 +11,7 @@ on:
     paths:
       - 'backend/**'
       - '.github/workflows/01-code-scan-frontend.yml'
+      
 
 # ============================================================
 # ONE PLACE TO CHANGE PER SERVICE
