@@ -50,7 +50,7 @@ on:
       - 'frontend/**'
       - '.github/workflows/02-ci-frontend.yml'
       - '.github/workflows/_node-build.yml'
-      - '.github/workflows/_node-pr-check.yml'
+      - '.github/workflows/_node-code-scan.yml'
       - '.github/workflows/_reusable-*.yml'
 
 # =======================================================================================
