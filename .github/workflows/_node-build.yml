@@ -219,7 +219,7 @@ jobs:
 
   Pr-Check-Job:
     # name: PR Check Job
-    uses: ./.github/workflows/_node-pr-check.yml
+    uses: ./.github/workflows/_node-code-scan.yml
 
     with:
       service-name: ${{ inputs.service-name }}
