@@ -77,6 +77,8 @@ jobs:
       runner: ubuntu-latest
 
       gitleaks-scan: true
+      
+      eslint-scan: true
 
       trivy-fs-scan: false
       trivy-fs-scan-path: "."
