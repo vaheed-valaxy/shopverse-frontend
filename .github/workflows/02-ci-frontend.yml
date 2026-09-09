@@ -164,7 +164,7 @@ jobs:
       trivy-dockerfile-scan: true
       
       # opa-conftest-dockerfile-scan: true
-      # opa-policy: "policy/dockerfile/"
+      # opa-policy: "opa-policy/dockerfile/"
 
       # =========================================================================
       # Image Build
