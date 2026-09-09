@@ -1,5 +1,4 @@
 ## What each tool does  
-```text
 | Tool            | Frontend responsibility                    |  
 | --------------- | ------------------------------------------ |  
 | **CodeQL**      | Source-code security analysis              |  
@@ -8,7 +7,7 @@
 | **Gitleaks**    | Secrets accidentally committed             |  
 | **SonarQube**   | Code quality + bugs + security/code smells |  
 | **npm audit**   | npm dependency vulnerabilities             |  
-```
+
 ## Responsibility Table  
 ```text
 | Stage        | Tool             | Workflow   | GitHub Code Scanning? |     Artifact? | Purpose                 |  
@@ -24,4 +23,16 @@
 | Supply chain | Cosign           | `02`       |                     ❌ |             ❌ | Sign image              |  
 | Supply chain | SBOM             | `02`       |                     ❌ | ✅/attestation | Software inventory      |  
 | Deployment   | GitOps           | `02`       |                     ❌ |             ❌ | Update desired state    |  
-| Deployment   | ArgoCD           | Outside CI |                     ❌ |             ❌ | Deploy to EKS           |  
+| Deployment   | ArgoCD           | Outside CI |                     ❌ |             ❌ | Deploy to EKS           |
+
+## The key rules are:
+| Stage    | Image       | Scan             | Sign       | SBOM       |  
+| -------- | ----------- | ---------------- | ---------- | ---------- |  
+| Build    | Create      | ✅                | ❌          | ❌          |  
+| DEV ECR  | Same image  | Already scanned  | ❌          | ❌          |  
+| DEV      | Same digest | Runtime tests    | ❌          | ❌          |  
+| QA ECR   | Same digest | Already scanned  | ❌          | ❌          |  
+| QA       | Same digest | Runtime tests    | ❌          | ❌          |  
+| PROD ECR | Same digest | Already scanned  | ✅          | ✅          |  
+| PROD     | Same digest | Kyverno verifies | ✅ required | ✅ required |  
+
