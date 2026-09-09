@@ -84,7 +84,7 @@ jobs:
       trivy-fs-scan-path: "."
       trivy-fs-skip-files: '**/README.md,**/LICENSE,**/docs/**'
 
-      codeql-scan: true
+      codeql-scan: true 
 
       sonarqube-scan: false
       # sonar-host-url: ${{ vars.SONAR_HOST_URL }}
