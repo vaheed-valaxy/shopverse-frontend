@@ -9,7 +9,7 @@
 | **npm audit**   | npm dependency vulnerabilities             |  
 
 ## Responsibility Table  
-```text
+
 | Stage        | Tool             | Workflow   | GitHub Code Scanning? |     Artifact? | Purpose                 |  
 | ------------ | ---------------- | ---------- | --------------------: | ------------: | ----------------------- |  
 | Source       | Gitleaks         | `01`       |                     ❌ |      Optional | Secrets                 |  
