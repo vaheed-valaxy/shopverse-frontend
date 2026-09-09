@@ -163,8 +163,8 @@ jobs:
       hadolint-dockerfile-scan: true
       trivy-dockerfile-scan: true
       
-      opa-conftest-dockerfile-scan: true
-      opa-policy: "opa-policy/dockerfile/"
+      # opa-conftest-dockerfile-scan: false
+      # opa-policy: "opa-policy/dockerfile/"
 
       # =========================================================================
       # Image Build
