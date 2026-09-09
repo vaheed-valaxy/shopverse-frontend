@@ -114,6 +114,12 @@ on:
         type: boolean
         default: false
 
+      opa-policy:
+        description: "OPA Policy file/dir path"
+        required: false
+        type: string
+        default: ""
+
       # ======================================================
       # Image Build
       # ======================================================
@@ -256,8 +262,10 @@ jobs:
       dockerfile: ${{ inputs.dockerfile }}
 
       hadolint-dockerfile-scan: ${{ inputs.hadolint-dockerfile-scan }}     
-      trivy-dockerfile-scan: ${{ inputs.trivy-dockerfile-scan }}        
+      trivy-dockerfile-scan: ${{ inputs.trivy-dockerfile-scan }}   
+      
       opa-conftest-dockerfile-scan: ${{ inputs.opa-conftest-dockerfile-scan }}
+      opa-policy: ${{ inputs.opa-policy }}
         
   # ============================================================
   # 3. BUILD + SCAN + PUSH IMAGE
