@@ -1,0 +1,56 @@
+# Triggered manually — picks up the image currently running in QA and opens
+# a PR in the GitOps repo (vars.GITOPS_REPO) to promote it to PROD.
+# PROD ArgoCD app manual deploy after merge.
+
+name: Promote — Frontend - QA - To - PROD
+
+on:
+  workflow_dispatch: 
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:   
+
+  # oidc-debug:
+  #   name: Debug GitHub OIDC Claims
+  #   runs-on: ubuntu-latest
+
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+
+  #   steps:
+  #     - name: Show OIDC claims
+  #       uses: github/actions-oidc-debugger@main    # This action gives error
+        
+  promote-qa-to-prod:
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-promote-qa-to-prod.yml@main
+    with:
+      service-name: frontend
+      
+      qa-values-file: envs/qa/values-frontend.yaml
+      prod-values-file: envs/prod/values-frontend.yaml
+      
+      gitops-repo: shopverse-gitops
+      gitops-owner: vaheed-valaxy
+      
+      qa-ecr-repo: shopverse-qa/frontend
+      prod-ecr-repo: shopverse/frontend
+      
+      aws-region: us-east-1
+      aws-ecr-prod-promotion-role-arn: ${{ vars.AWS_ECR_ROLE_ARN }} # arn:aws:iam::123456789012:role/shopverse-qa-promotion
+
+      cosign-oidc-issuer: 'https://token.actions.githubusercontent.com'
+      cosign-certificate-identity-regexp: '^https://github\.com/vaheed-valaxy/central-github-actions/\.github/workflows/reusable-image-sign\.yml@refs/heads/main$'
+      cosign-sbom-attestation-certificate-identity-regexp: '^https://github\.com/vaheed-valaxy/central-github-actions/\.github/workflows/reusable-sbom-attestation\.yml@refs/heads/main$'
+      
+      # cosign-certificate-identity: 'https://github.com/vaheed-valaxy/central-github-actions/.github/workflows/reusable-image-sign.yml@@refs/heads/main'
+      # cosign-sbom-attestation-certificate-identity: 'https://github.com/vaheed-valaxy/central-github-actions/.github/workflows/reusable-sbom-attestation.yml@refs/heads/main'
+      
+    secrets:
+      GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+
+      
