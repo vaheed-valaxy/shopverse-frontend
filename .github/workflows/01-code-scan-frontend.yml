@@ -9,7 +9,7 @@ on:
       - 'fix-*'
       - 'chore-*'
     paths:
-      - 'frontend/**'
+      - 'shopverse-frontend/**'
       - '.github/workflows/01-code-scan-frontend.yml'
 
 # ============================================================
