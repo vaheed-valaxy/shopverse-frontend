@@ -1,0 +1,34 @@
+# Triggered manually — picks up the image currently running in DEV and opens
+# a PR in the GitOps repo (vars.GITOPS_REPO) to promote it to QA.
+# QA ArgoCD app auto-syncs after merge.
+
+name: Promote — Frontend - DEV - To - QA
+
+on:
+  workflow_dispatch: 
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:        
+  promote-dev-to-qa:
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-promote-dev-to-qa.yml@main
+    with:
+      service-name: frontend
+      
+      dev-values-file: envs/dev/values-frontend.yaml
+      qa-values-file: envs/qa/values-frontend.yaml
+      
+      gitops-repo: shopverse-gitops
+      gitops-owner: vaheed-valaxy
+      
+      dev-ecr-repo: shopverse-dev/frontend
+      qa-ecr-repo: shopverse-qa/frontend
+      
+      aws-region: us-east-1
+      aws-ecr-qa-promotion-role-arn: ${{ vars.AWS_ECR_ROLE_ARN }} # arn:aws:iam::123456789012:role/shopverse-qa-promotion
+  
+    secrets:
+      GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
