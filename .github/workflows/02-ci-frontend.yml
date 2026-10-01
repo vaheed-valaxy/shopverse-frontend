@@ -75,7 +75,7 @@ env:
   GITOPS_OWNER: ${{ vars.GITOPS_OWNER }}
   GITOPS_REPO: ${{ vars.GITOPS_REPO }}
 
-  # ECR_REPOSITORY: "shopverse-dev/frontend"
+  ECR_REPOSITORY: "shopverse-dev/frontend"
 
 # =======================================================================================
 # Jobs
