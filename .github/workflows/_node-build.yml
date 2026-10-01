@@ -24,6 +24,7 @@ on:
         type: string
         default: ubuntu-latest
 
+
       # ======================================================
       # Application Scans
       # ======================================================
@@ -76,6 +77,7 @@ on:
         type: string
         default: ""
 
+
       # ======================================================
       # Dockerfile Scans
       # ======================================================
@@ -90,11 +92,13 @@ on:
         description: "Path to Dockerfile"
         required: false
         type: string
+        default: Dockerfile
 
       build-context:
         description: "Docker build context"
         required: false
         type: string
+        default: "."
 
       hadolint-dockerfile-scan:
         description: "Enable Hadolint Dockerfile Scan"
@@ -119,6 +123,7 @@ on:
         required: false
         type: string
         default: ""
+
 
       # ======================================================
       # Image Build
@@ -166,6 +171,7 @@ on:
         type: string
         default: ""
 
+
       # ======================================================
       # Image Security
       # ======================================================
@@ -182,6 +188,7 @@ on:
         type: boolean
         default: false
 
+
       # ======================================================
       # GitOps
       # ======================================================
@@ -191,6 +198,12 @@ on:
         required: false
         type: boolean
         default: false
+
+      gitops-owner:
+        description: "GitOps Repository Owner"
+        required: false
+        type: string
+        default: ""
 
       gitops-repo:
         description: "GitOps Repository"
@@ -203,6 +216,7 @@ on:
         required: false
         type: string
         default: ""
+
 
     # ==========================================================
     # Secrets
@@ -246,6 +260,7 @@ jobs:
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+
   # ============================================================
   # 2. DOCKERFILE SCAN
   # ============================================================
@@ -266,6 +281,7 @@ jobs:
       
       opa-conftest-dockerfile-scan: ${{ inputs.opa-conftest-dockerfile-scan }}
       opa-policy: ${{ inputs.opa-policy }}
+
         
   # ============================================================
   # 3. BUILD + SCAN + PUSH IMAGE
@@ -298,6 +314,7 @@ jobs:
       aws-region: ${{ inputs.aws-region }}
       aws-ecr-role-arn: ${{ inputs.aws-ecr-role-arn }}
 
+
   # ============================================================
   # 4. COSIGN IMAGE SIGNING
   # ============================================================
@@ -320,6 +337,10 @@ jobs:
       aws-region: ${{ inputs.aws-region }}
       aws-ecr-role-arn: ${{ inputs.aws-ecr-role-arn }}
 
+      cosign-certificate-identity-regexp: ""
+      cosign-oidc-issuer: https://token.actions.githubusercontent.com
+
+
   # ============================================================
   # 5. SBOM GENERATION + ATTESTATION
   # ============================================================
@@ -328,8 +349,7 @@ jobs:
     # name: Generate and Attest SBOM
     if: ${{ inputs.image-sbom }}
 
-    needs:
-      - Image-Build-Scan-Push-Job
+    needs: Image-Build-Scan-Push-Job
 
     uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-sbom-attestation.yml@main
 
@@ -342,24 +362,28 @@ jobs:
       aws-region: ${{ inputs.aws-region }}
       aws-ecr-role-arn: ${{ inputs.aws-ecr-role-arn }}
 
+      cosign-sbom-attestation-certificate-identity-regexp: ""
+      cosign-oidc-issuer: https://token.actions.githubusercontent.com
+
+
   # ============================================================
-  # 6. UPDATE GITOPS + CREATE PR
+  # 6. UPDATE GITOPS 
   # ============================================================
 
-  Update-Helm-Values-Pr-Job:
-    name: Update Helm Values and Create PR
-    
+  Update-Helm-Values-Job:
+    name: Update Helm Values
+
     if: ${{ inputs.image-build && inputs.update-helm-values }}
-    
-    needs:
-      - Image-Build-Scan-Push-Job
 
-    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-update-helm-values.yml@main
+    needs: Image-Build-Scan-Push-Job
+      
+    uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-update-dev-helm-values.yml@main
 
     with:
       service-name: ${{ inputs.service-name }}
       runner: ${{ inputs.runner }}
 
+      gitops-owner: ${{ inputs.gitops-owner }}
       gitops-repo: ${{ inputs.gitops-repo }}
 
       helm-values-file: ${{ inputs.helm-values-file }}
@@ -367,4 +391,31 @@ jobs:
       image-digest: ${{ needs.Image-Build-Scan-Push-Job.outputs.image_digest }}
         
     secrets:
-      GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
+      GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}  
+        
+
+  # ============================================================
+  # 6. UPDATE GITOPS + CREATE PR
+  # ============================================================
+
+  # Update-Helm-Values-Pr-Job:
+  #   name: Update Helm Values and Create PR
+    
+  #   if: ${{ inputs.image-build && inputs.update-helm-values }}
+    
+  #   needs: Image-Build-Scan-Push-Job     
+
+  #   uses: vaheed-valaxy/central-github-actions/.github/workflows/reusable-update-helm-values.yml@main
+
+  #   with:
+  #     service-name: ${{ inputs.service-name }}
+  #     runner: ${{ inputs.runner }}
+
+  #     gitops-repo: ${{ inputs.gitops-repo }}
+
+  #     helm-values-file: ${{ inputs.helm-values-file }}
+  #     image: ${{ needs.Image-Build-Scan-Push-Job.outputs.image }}        
+  #     image-digest: ${{ needs.Image-Build-Scan-Push-Job.outputs.image_digest }}
+        
+  #   secrets:
+  #     GITOPS_TOKEN: ${{ secrets.GITOPS_TOKEN }}
